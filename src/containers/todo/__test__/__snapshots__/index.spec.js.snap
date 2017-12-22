@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render todo container should match the snapshot 1`] = `
+<div
+  className="container"
+>
+  <input
+    className="main-input"
+    onChange={undefined}
+    onKeyUp={[Function]}
+    placeholder="請輸入文字..."
+  />
+  <div
+    className="filter-box"
+  >
+    <span
+      onClick={[Function]}
+    >
+      ALL
+    </span>
+    <span
+      onClick={[Function]}
+    >
+      完成
+    </span>
+    <span
+      onClick={[Function]}
+    >
+      未完成
+    </span>
+  </div>
+  <ul
+    className="list"
+  >
+    <li>
+      <i
+        className="icono-check"
+        onClick={[Function]}
+      />
+      <span
+        className="content"
+      >
+        test1
+      </span>
+      <span
+        className="lazy"
+      >
+        <i
+          className="icono-dropper"
+          onClick={[Function]}
+        />
+        <i
+          className="icono-forbidden"
+          onClick={[Function]}
+        />
+      </span>
+    </li>
+  </ul>
+</div>
+`;

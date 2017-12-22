@@ -8,7 +8,7 @@ const Input = (props) => {
             className={props.className} 
             onChange={props.onChange}
             onKeyUp={props.onKeyUp}
-        />
+        ></input>
     );
 }
 Input.propTypes = {

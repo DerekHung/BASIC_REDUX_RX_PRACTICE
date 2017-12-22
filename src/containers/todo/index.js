@@ -38,7 +38,6 @@ class TodoWrapper extends PureComponent {
         })
     }
     render(){
-
         const { todoList, addNewTodo, changeFilter } = this.props;
         return(
             <div className="container">
