@@ -23,9 +23,21 @@ describe('render todo container', () => {
             todoReducer: {todolist: [
                 {
                     key: 0,
-                    value: 'test1',
+                    value: 'testdefault',
                     onEdit: false,
                     completed: false
+                },
+                {
+                    key: 1,
+                    value: 'testEdit',
+                    onEdit: true,
+                    completed: false
+                },
+                {
+                    key: 2,
+                    value: 'testcomplete',
+                    onEdit: false,
+                    completed: true
                 },
             ],
             count: 0,
