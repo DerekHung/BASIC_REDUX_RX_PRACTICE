@@ -13,6 +13,7 @@ import { selectByFilter } from '../../reducers/selectors';
 import './style.css';
 
 class TodoWrapper extends PureComponent {
+    
     _handleKeyPress(cb, ...args) {
         const e = args[args.length - 1];
         if( e.keyCode === 13 ){
@@ -20,23 +21,7 @@ class TodoWrapper extends PureComponent {
             e.target.value = '';
         } 
     }
-    _renderElement(list){
-        const { openEdit, updateItem, completeItem, removeItem } = this.props;
-        return list.map((data, index) => {
-            if( data.completed ) return <li key={data.key}><del>{data.value}</del></li>
-            if( data.onEdit ) return <li  key={data.key}><input className="inner-input" defaultValue={data.value} onKeyUp={this._handleKeyPress.bind(this, updateItem, data.key)}/></li>
-            return (
-                <li key={data.key}>
-                    <i className="icono-check" onClick={completeItem.bind(this, data.key)} />
-                    <span className="content">{data.value}</span>
-                    <span className="lazy">
-                        <i className="icono-dropper" onClick={openEdit.bind(this, data.key)} />
-                        <i className="icono-forbidden" onClick={removeItem.bind(this, data.key)} />
-                    </span>
-                </li>
-            );
-        })
-    }
+
     render(){
         const { todoList, addNewTodo, changeFilter } = this.props;
         return(
@@ -56,6 +41,25 @@ class TodoWrapper extends PureComponent {
             </div>
         );
     }
+
+    _renderElement(list){
+        const { openEdit, updateItem, completeItem, removeItem } = this.props;
+
+        return list.map((data, index) => {
+            if( data.completed ) return <li key={data.key}><del>{data.value}</del></li>
+            if( data.onEdit ) return <li  key={data.key}><input className="inner-input" defaultValue={data.value} onKeyUp={this._handleKeyPress.bind(this, updateItem, data.key)}/></li>
+            return (
+                <li key={data.key}>
+                    <i className="icono-check" onClick={completeItem.bind(this, data.key)} />
+                    <span className="content">{data.value}</span>
+                    <span className="lazy">
+                        <i className="icono-dropper" onClick={openEdit.bind(this, data.key)} />
+                        <i className="icono-forbidden" onClick={removeItem.bind(this, data.key)} />
+                    </span>
+                </li>
+            );
+        })
+    }
 }
 
 const mapStateToPorps = (state) => {
@@ -64,4 +68,11 @@ const mapStateToPorps = (state) => {
     }
 }
 
-export default connect(mapStateToPorps,{openEdit,addNewTodo,updateItem,completeItem,removeItem,changeFilter})(TodoWrapper);
+export default connect(mapStateToPorps,{
+    openEdit,
+    addNewTodo,
+    updateItem,
+    completeItem,
+    removeItem,
+    changeFilter
+})(TodoWrapper);

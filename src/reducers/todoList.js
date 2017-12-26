@@ -20,7 +20,7 @@ const todoReducer = (state = initState, action) => {
                 todolist: 
                 [...state.todolist, 
                     { 
-                        key:new Date().getTime() + state.count, 
+                        key: action.value + (state.count + 1), 
                         value: action.value,
                         onEdit: false,
                         completed: false

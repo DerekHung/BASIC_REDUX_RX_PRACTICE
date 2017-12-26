@@ -25,19 +25,14 @@ export const removeItem = jest.fn().mockImplementation(key => {
     }
 })
 
+////  有時間再補完 componet => action 這段測試
+
 export const openEdit = (key) => {
     return {
         type: OPEN_EDIT,
         key
     }
 }
-
-// export const addNewTodo = (value) => {
-//     return {
-//         type: ADD_NEW_TODO,
-//         value
-//     }
-// }
 
 export const updateItem = (value, key) => {
     return {

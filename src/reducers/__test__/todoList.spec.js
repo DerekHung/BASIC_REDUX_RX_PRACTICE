@@ -14,13 +14,13 @@ describe('test todoReducer', () => {
         mockStoreData = {
             todolist:[
                 {
-                    key: 0,
+                    key: 'test11',
                     value: 'test1',
                     onEdit: false,
                     completed: true
                 },
                 {
-                    key: 1,
+                    key: 'test22',
                     value: 'test2',
                     onEdit: true,
                     completed: false
@@ -42,7 +42,7 @@ describe('test todoReducer', () => {
             value: 'testing'
         }
         const expectData = {
-            key:new Date().getTime() + 0, 
+            key:action.value + 1, 
             value: action.value,
             onEdit: false,
             completed: false
@@ -54,7 +54,7 @@ describe('test todoReducer', () => {
     it('test OPEN_EDIT...should change the onEdit', () => {
         const action = {
             type: actions.OPEN_EDIT,
-            key: 0
+            key: 'test11'
         }
 
         expect(reducer(mockStoreData, action).todolist.find( element => element.key === action.key ).onEdit).toBeTruthy();
@@ -64,7 +64,7 @@ describe('test todoReducer', () => {
         const action = {
             type: actions.UPDATE_ITEM,
             value: 'hahaha',
-            key: 0
+            key: 'test22'
         }
         expect(reducer(mockStoreData, action).todolist.find( element => element.key === action.key ).onEdit).toBeFalsy();
         expect(reducer(mockStoreData, action).todolist.find( element => element.key === action.key ).value).toEqual('hahaha');
@@ -73,7 +73,7 @@ describe('test todoReducer', () => {
     it('test COMPLETE_ITEM...should make elm complete', () => {
         const action = {
             type: actions.COMPLETE_ITEM,
-            key: 0
+            key: 'test11'
         }
 
         expect(reducer(mockStoreData, action).todolist.find( element => element.key === action.key ).completed).toBeTruthy();
@@ -82,7 +82,7 @@ describe('test todoReducer', () => {
     it('test REMOVE_ITEM...should remove the item from todoList', () => {
         const action = {
             type: actions.REMOVE_ITEM,
-            key: 0
+            key: 'test22'
         }
 
         expect(reducer(mockStoreData, action).todolist.some( element => element.key === action.key )).toBeFalsy();
