@@ -1,3 +1,6 @@
+i {
+    cursor: pointer;
+}
 .container {
     min-width: 320px;
     width: 100%;
@@ -15,6 +18,7 @@
     outline: 0;
     background: #f4f4f4;
     margin-left: 40px;
+    padding-left: 20px;
 }
 .filter-box {
     display: flex;
@@ -30,7 +34,7 @@
     height: 50px;
     display: flex;
     justify-content: space-between;
-    font-size: 25px;
+    font-size: 20px;
     text-align: center;
     padding: 5px;
     border: 1px solid #eee;
