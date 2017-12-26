@@ -77,7 +77,7 @@ class ImgUploader extends PureComponent {
         this.temImage.crossOrigin="Anonymous"
 
         const ajaxSetting = {
-            url: 'http://localhost:3008/api/transformImage',
+            url: 'https://quiet-inlet-90477.herokuapp.com/api/transformImage',
             method: 'POST',
             body: JSON.stringify({url}),
             headers: {
@@ -207,7 +207,7 @@ class ImgUploader extends PureComponent {
 
         const _confirmAction = (e) => {
             const ajaxSetting = {
-                url: 'http://localhost:3008/api/uploadImage',
+                url: 'https://quiet-inlet-90477.herokuapp.com/api/uploadImage',
                 method: 'POST',
                 body: JSON.stringify({cropRes}),
                 headers: {
