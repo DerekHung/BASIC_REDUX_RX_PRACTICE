@@ -12,36 +12,48 @@ class ImgUploader extends PureComponent {
         this.state = {
             paintSrc: null
         };
+        
+        this.tempImage = new Image();
+        this.tempImage.crossOrigin="Anonymous"
+        
         this.uploadImage = (e) => this._uploadImage(e);
         this.handleUrlInput = (e) => this._handleUrlInput(e);
         this.handleCropClick = (e) => this._handleCropClick(e);
         
     }
 
+    _setCropWindow() {
+        return (source) => 
+            source.subscribe( ({ src, width, height }) => {
+                this.setState({
+                    paintSrc: src,
+                    cropResult: null,
+                    cropWindowStyle: {
+                        top: 0,
+                        left: 0,
+                        width: width,
+                        height: height
+                    }
+                })
+            })
+    }
+
+    _createImageLoader(imageInstance) {
+        return (source) =>
+            source.mergeMap( url => {
+                imageInstance.src = url;
+                return Rx.DOM.load(imageInstance, (e) => e.path[0])
+            })
+    }
+
     _uploadImage(e) {
-        this.temImage = new Image();
         return  Rx.Observable
                 .of(e)
-                .mergeMap( e => Rx.Observable.from(e.target.files))
+                .map( e => e.target.files[0])
                 .filter( file => file.type.match('image'))
                 .mergeMap( file => Rx.DOM.fromReader(file).asDataURL())
-                .mergeMap( url => {
-                    this.setState({paintSrc: url});
-                    this.temImage.src = url;
-                    return Rx.DOM.load(this.temImage, (e) => e.path[0])
-                })
-                .map( e => ({ width: e.width, height: e.height }))
-                .subscribe( res => {
-                    this.setState({
-                        cropResult: null,
-                        cropWindowStyle: {
-                            url: this._createCanvas(this.temImage, res),
-                            top: 0,
-                            left: 0,
-                            ...res
-                        }
-                    })
-                })
+                .let( this._createImageLoader(this.tempImage))
+                .let( this._setCropWindow())
     }
 
     _handleUrlInput(e) {
@@ -49,22 +61,21 @@ class ImgUploader extends PureComponent {
     }
 
     _handleCropClick(e) {
-
-        const mouseMove = Rx.Observable.fromEvent(document.body, 'mousemove');
+        const mouseMove = Rx.Observable.fromEvent(document.body, 'mousemove', Rx.Scheduler.requestAnimationFrame);
         const mouseUp = Rx.Observable.fromEvent(document.body, 'mouseup');
         const orginalPos = {
             x: e.nativeEvent.offsetX,
             y: e.nativeEvent.offsetY
         }
-
+        const maskRect = this.mask.getBoundingClientRect();
         return  Rx.Observable
                 .of(e)
                 .mergeMap( e => mouseMove.takeUntil(mouseUp))
-                .map( e =>  getCorrectWindow( this.temImage, orginalPos.x, orginalPos.y, e.offsetX , e.offsetY ))
+                .map( e => ({ x: e.clientX - maskRect.x, y: e.clientY - maskRect.y}))
+                .map( pos =>  getCorrectWindow( this.tempImage, orginalPos.x, orginalPos.y , pos.x, pos.y ))
                 .subscribe( res => {
                     this.setState({
                         cropWindowStyle: {
-                            url: this._createCanvas(this.temImage, res),
                             ...res
                         }
                     })
@@ -73,8 +84,7 @@ class ImgUploader extends PureComponent {
     }
 
     _urlUpload(url) {
-        this.temImage = new Image();
-        this.temImage.crossOrigin="Anonymous"
+        
 
         const ajaxSetting = {
             url: 'https://quiet-inlet-90477.herokuapp.com/api/transformImage',
@@ -82,30 +92,27 @@ class ImgUploader extends PureComponent {
             body: JSON.stringify({url}),
             headers: {
                 "content-type": "application/json;charset=UTF-8"
-            }
+            },
+            responseType: 'json'
         }
 
         return  Rx.DOM
                 .ajax(ajaxSetting)
-                .mergeMap( res => {
-                    this.setState({paintSrc: url});
-                    this.temImage.src = JSON.parse(res.response).result;
-                    return Rx.DOM.load(this.temImage, (e) => e.path[0])
-                })
-                .map( e => ({ width: e.width, height: e.height }))
-                .subscribe( res => {
-                    const url = this._createCanvas(this.temImage, res);
-                    this.setState({
-                        cropResult: null,
-                        paintSrc: url,
-                        cropWindowStyle: {
-                            url,
-                            top: 0,
-                            left: 0,
-                            ...res
-                        }
-                    })
-                })
+                .map( res => res.response.result )
+                .let( this._createImageLoader(this.tempImage))
+                .let( this._setCropWindow())
+                // .subscribe( e => {
+                //     this.setState({
+                //         paintSrc: e.src,
+                //         cropResult: null,
+                //         cropWindowStyle: {
+                //             top: 0,
+                //             left: 0,
+                //             width: e.width,
+                //             height: e.height
+                //         }
+                //     })
+                // })
     }
 
     _createCanvas(image, { top=0, left=0, width, height}) {
@@ -163,9 +170,10 @@ class ImgUploader extends PureComponent {
         if( !imgSrc || !style ) return null;
 
         const _confirmAction = (e) => {
+            
             this.setState({
                 paintSrc: null,
-                cropResult: style.url,
+                cropResult: this._createCanvas(this.tempImage, this.state.cropWindowStyle),
                 cropWindowStyle: {}
             })
         }
@@ -182,9 +190,14 @@ class ImgUploader extends PureComponent {
             })
         }
 
+        const cropStyle = {
+            left: -style.left -1,
+            top: -style.top -1
+        }
+
         style.background = `url(${style.url}) no-repeat`;
         // delete style.url;
-
+        
         return (
             <div className="crop-wrapper">
                 <div 
@@ -192,8 +205,10 @@ class ImgUploader extends PureComponent {
                     onMouseDown={this.handleCropClick}
                     >
                     <img src={imgSrc} alt="paint"/>
-                    <div className="mask" />
-                    <div className="crop-window" style={style}/>
+                    <div className="mask" ref={_ref => this.mask = _ref}/>
+                    <div className="crop-window" style={style}>
+                        <img src={imgSrc} alt="inner-img" style={cropStyle} />
+                    </div>
                 </div>
                 <div className="functional-button">
                     <button onClick={_confirmAction}>確認</button>

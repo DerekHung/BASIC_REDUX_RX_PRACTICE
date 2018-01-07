@@ -1,4 +1,7 @@
 const getCorrectWindow = (image, oriX, oriY, moveX, moveY) => {
+    moveX = moveX < 0 ? 0 : moveX;
+    moveY = moveY < 0 ? 0 : moveY;
+
     const disX = moveX - oriX;
     const disY = moveY - oriY;
 

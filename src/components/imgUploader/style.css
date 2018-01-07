@@ -53,8 +53,13 @@ html, body {
     height: 100%;
     top: 0;
     left: 0;
-    border: 1px dashed #000000;
+    outline: 1px dashed #000000;
     background: #fff url('./transparent.png');
+    pointer-events: none;
+    overflow: hidden;
+}
+.crop-window img {
+    position: absolute;
 }
 .mask {
     position: absolute;
